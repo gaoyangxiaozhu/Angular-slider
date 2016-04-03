@@ -113,7 +113,7 @@ slider{
 .slider .min-num,
 .slider .max-num{
   color: white;
-  font-size:
+  font-size: 12px;
 }
 
 .slider .sign-num{
