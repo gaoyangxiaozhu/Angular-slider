@@ -33,13 +33,19 @@
 
          // Assign the angular directive template HTML
          template:
-             '<span class="slider slider-body"> ' +
+             '<span class="slider slider-body" tabindex="0"> ' +
                 '<span class="slider-line-before"></span>'+
-                '<span class="slider-line" tabindex="-1"></span>'+
+                '<span class="slider-line"></span>'+
                 '<span class="slider-line-after"></span>'+
                 '<span class="slider-bar"></span>'+
+                '<span class="sign-num left">'+
+                  '<span class="text">{{ currentFrom }}</span>'+
+                '</span>'+
                 '<span class="slider-bar-from slider-hander"></span>'+
                 '<span class="slider-bar-to slider-hander"></span>'+
+                '<span class="sign-num right">'+
+                  '<span class="text">{{ currentTo }} 3</span>'+
+                '</span>'+
              '</span>'
      };
 
@@ -65,7 +71,6 @@
       */
      function build(scope, el, attrs) {
 
-
          var leftBtn = el.find('.slider-bar-from.slider-hander');
          var rightBtn = el.find('.slider-bar-to.slider-hander');
          var sliderBar = el.find('.slider-bar');
@@ -81,7 +86,6 @@
              bar: sliderBar
          }
 
-
          // avoid  negative number or none
          if (!scope.min || scope.min <= 0) {
              scope.min = 0;
@@ -95,13 +99,22 @@
          if(!scope.to || scope.to <=0){
              scope.to= scope.max;
          }
+         if(scope.to > scope.max){
+            scope.to = scope.max;
+         }
+         if(scope.from > scope.max){
+           scope.from = scope.max;
+         }
+
          var option={
              min: scope.min,
              max: scope.max,
-             from: scope.from,
-             to: scope.to,
+             from: 20,
+             to: 60,
+             sums: scope.max - scope.min,
              single: scope.single? scope.single: false
          }
+
 
          var init={};//用于每次mousedown事件中hander的位置的初始化
          var target=null;
@@ -137,9 +150,9 @@
               newPoint = newPoint <= line.x ? line.x : newPoint
               updateTargetLeft();
 
-              var percentWidth=(init.rX - newPoint)/line.w;
+              var percentWidth = (init.rX - newPoint) / line.w;
               percentWidth*=100;
-              var percentLeft=(newPoint - line.x)/line.w;
+              var percentLeft= (newPoint - line.x) / line.w;
               percentLeft*=100;
               var css={
                   'width': percentWidth+'%',
@@ -201,18 +214,23 @@
           }
         }
 
-        function initPositionForLeftRightBtn(){
-            var css={
-                'left':'0%'
-            }
-            leftBtn.css(css);
-            css={
-                'left':'100%'
-            }
-            rightBtn.css(css);
+        function initPositionForBtn(){
+
+            var initLeftPositionPer = (option.from / option.sums * 100 ) + '%';
+            var initRightPositinPer = (option.to / option.sums * 100 ) + '%';
+
+            leftBtn.css({"left":  initLeftPositionPer});
+            rightBtn.css({"left": initRightPositinPer});
+
+            sliderBar.css({
+              'left': initLeftPositionPer,
+              'width': (option.to - option.from) / option.sums * 100 + '%',
+            });
         }
+
         removeLeftBtn(option.single);
-        initPositionForLeftRightBtn();
+        //初始化按钮位置
+        initPositionForBtn();
 
         if(!option.single){
             leftBtn.on('mousedown', change);
