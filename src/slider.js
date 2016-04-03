@@ -29,15 +29,23 @@
              from: '=',
              to: '=',
              single: '@',
-             hideText: '@'
+             hideFromTo: '@',
+             hideMinMax: '@',
+             hideText: '@',
          },
 
          // Assign the angular directive template HTML
          template:
              '<span class="slider slider-body" tabindex="0"> ' +
+                '<span class="min-num">'+
+                  '<span class="text">{{ min }}</span>'+
+                '</span>'+
                 '<span class="slider-line-before"></span>'+
                 '<span class="slider-line"></span>'+
                 '<span class="slider-line-after"></span>'+
+                '<span class="max-num">'+
+                  '<span class="text">{{ max }}</span>'+
+                '</span>'+
                 '<span class="slider-bar"></span>'+
                 '<span class="left-container">'+
                   '<span class="sign-num left">'+
@@ -134,7 +142,9 @@
              to: scope.to,
              sums: scope.max - scope.min,
              single: scope.single== "false " ? true : false,
-             hideText: scope.hideText == 'true' ? true : false
+             hideText: scope.hideText == 'true' ? true : false,
+             hideMinMax: scope.hideMinMax == 'true' ? true : false,
+             hideFromTo: scope.hideFromTo == 'true' ? true : false,
          }
 
          var init={};//用于每次mousedown事件中hander的位置的初始化
@@ -142,6 +152,7 @@
          var currentType = null;//当move事件触发时，判定移动哪个btn容器(left-container right-container)
 
          //防止鼠标移动时文字被选中
+         //TODO 不知道这样对不对
          if(document.selection){//IE ,Opera
            if(document.selection.empty)
                    document.selection.empty();//IE
@@ -155,8 +166,8 @@
          //如果single为true 移除left-container
          removeLeftBtn(option.single);
 
-         //如果hideText为true, 移除text
-         removeText(option.hideText);
+         //移除不需要的text
+         removeText([option.hideText, option.hideMinMax, option.hideFromTo]);
 
          //初始化按钮容器位置
          initPosition();
@@ -315,10 +326,24 @@
           }
         }
 
-        function removeText(hide){
-          if(hide){
-            el.find('.sign-num').remove();
+        function removeText(options){
+          var classArray = [];
+
+          if(options[0]){
+            el.find('.sign-num, .min-num, .max-num').remove();
+            return;
           }
+          if(options[1]){
+            classArray.push(".min-num");
+            classArray.push(".max-num");
+          }
+          if(options[2]){
+            classArray.push('.sign-num');
+          }
+
+          var classStr = classArray.join(", ");
+          el.find(classStr).remove();
+          return ;
         }
 
         function initPosition(){

@@ -73,6 +73,13 @@ slider{
 slider.active .slider-hander{
   border: 1px solid #4aa4ce;
 }
+.slider .min-num,
+.slider .max-num{
+  position: absolute;
+}
+
+.slider .min-num,
+.slider .max-num,
 .slider .sign-num{
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -84,28 +91,38 @@ slider.active .slider-hander{
   -ms-flex-pack: center;
   justify-content: center;
   position: absolute;
-  left: -7px;
   top: -37px;
   width: 28px;
   height: 28px;
   border-radius: 28px;
-  background-color: white;
+  background-color: #ccc;
+  /*防止鼠标拖动时　文字被选中*/
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+  -webkit-user-select:none;
+
+}
+.slider .min-num,
+.slider .sign-num{
+  left: -7px;
+}
+.slider .max-num{
+  right: -21px;
+}
+.slider .min-num,
+.slider .max-num{
+  color: white;
+}
+
+.slider .sign-num{
   -webkit-transform: scale(0.4) translate3d(0,60px,0);
   transform: scale(0.4) translate3d(0,60px,0);
   transition: all .2s ease-in-out;
-
+  background-color: white;
 }
-.sign-num .text{
-    text-align: center;
-    color: white;
-    z-index: 1;
-    font-size: 12px;
-    background-color: #4aa4ce;
-    -moz-user-select: none;
-    -khtml-user-select: none;
-    user-select: none;
-    -webkit-user-select:none;
-}
+.slider .min-num:after,
+.slider .max-num:after,
 .slider .sign-num:after{
   position: absolute;
   content: '';
@@ -114,10 +131,28 @@ slider.active .slider-hander{
   border-radius: 16px;
   border-left: 14px solid transparent;
   border-right: 14px solid transparent;
-  border-top: 16px solid #4aa4ce;
+  border-top: 16px solid #ccc;
+
+}
+.slider .sign-num:after{
   opacity: 0;
+  border-top: 16px solid #4aa4ce;
   transition: all .2s ease-in-out;
 }
+
+.sign-num .text{
+    text-align: center;
+    color: white;
+    z-index: 1;
+    font-size: 12px;
+    background-color: #4aa4ce;
+    /*防止鼠标拖动时　文字被选中*/
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+    -webkit-user-select:none;
+}
+
 
  .slider:not([disabled]).avtice .sign-num, .slider:not([disabled]).active .sign-num:after,
  .slider:not([disabled]):focus .sign-num, .slider:not([disabled]):focus .sign-num:after{
