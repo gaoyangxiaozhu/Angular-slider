@@ -31,7 +31,7 @@ gulp.task('minifyjs', function() {
 });
 //clean
 gulp.task('clean', function() {
-    del('dist/*');
+    del(['dist/*.js', 'dist/*.css']);
 });
 
 gulp.task('default', ['clean'], function(){
