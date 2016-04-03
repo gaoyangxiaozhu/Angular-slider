@@ -101,6 +101,10 @@ slider.active .slider-hander{
     z-index: 1;
     font-size: 12px;
     background-color: #4aa4ce;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+    -webkit-user-select:none;
 }
 .slider .sign-num:after{
   position: absolute;

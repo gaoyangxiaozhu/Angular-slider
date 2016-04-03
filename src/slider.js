@@ -141,6 +141,17 @@
          var target=null;
          var currentType = null;//当move事件触发时，判定移动哪个btn容器(left-container right-container)
 
+         //防止鼠标移动时文字被选中
+         if(document.selection){//IE ,Opera
+           if(document.selection.empty)
+                   document.selection.empty();//IE
+           else{//Opera
+                   document.selection = null;
+          }
+        }else if(window.getSelection){//FF,Safari
+           window.getSelection().removeAllRanges();
+        }
+
          //如果single为true 移除left-container
          removeLeftBtn(option.single);
 
