@@ -11,8 +11,11 @@
     "directive"
   ],
   "authors": [
-    "gaoyangxiaozhu"
+    "gaoyangxiaozhu<gyyzyp@163.com>"
   ],
+  "dependencies":{
+    "jquery": "~1.11.3",
+  },
   "license": "MIT",
   "ignore": [
     "**/.*",
