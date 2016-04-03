@@ -348,7 +348,7 @@
 
           var classStr = classArray.join(", ");
           el.find(classStr).remove();
-          return ;
+          return;
         }
 
         function initPosition(){
