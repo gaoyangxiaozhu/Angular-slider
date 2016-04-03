@@ -68,7 +68,6 @@ slider{
   display: inline-block;
   border-radius: 12px;
   top: -4px;
-  cursor: pointer;
 }
 slider.active .slider-hander{
   border: 1px solid #4aa4ce;

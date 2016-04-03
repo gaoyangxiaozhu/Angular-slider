@@ -152,7 +152,14 @@
          var target=null;
          var currentType = null;//当move事件触发时，判定移动哪个btn容器(left-container right-container)
 
-         //防止鼠标移动时文字被选中
+         /*
+         * 156 line - 172line 防止鼠标移动时文字被选中
+         */
+         if('onselectstart' in document){//chrome ff
+           angular.element(document).on('selectstart', '.slider', function(e){
+             return false;
+           });
+         }
          //TODO 不知道这样对不对
          if(document.selection){//IE ,Opera
            if(document.selection.empty)
