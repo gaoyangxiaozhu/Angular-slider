@@ -139,7 +139,7 @@
 
          var init={};//用于每次mousedown事件中hander的位置的初始化
          var target=null;
-         var currentType = null;
+         var currentType = null;//当move事件触发时，判定移动哪个btn容器(left-container right-container)
 
          //如果single为true 移除left-container
          removeLeftBtn(option.single);
@@ -188,6 +188,9 @@
          angular.element(document).on('mouseup.slider', stopMove);
 
 
+/*
+* 下面是主要的功能函数
+*/
         function startMove(e, type, newPoint){
 
             e = e || window.event;
