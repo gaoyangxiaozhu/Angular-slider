@@ -1,2 +1,2 @@
-# Angular-slider
+# Angular-range-slider
 Range-slider using Angular
