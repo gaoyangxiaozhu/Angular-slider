@@ -37,13 +37,13 @@
          // Assign the angular directive template HTML
          template:
              '<span class="slider slider-body" tabindex="0"> ' +
-                '<span class="min-num">'+
+                '<span class="min-num" tabindex="-1">'+
                   '<span class="text">{{ min }}</span>'+
                 '</span>'+
                 '<span class="slider-line-before"></span>'+
                 '<span class="slider-line"></span>'+
                 '<span class="slider-line-after"></span>'+
-                '<span class="max-num">'+
+                '<span class="max-num" tabindex="-1">'+
                   '<span class="text">{{ max }}</span>'+
                 '</span>'+
                 '<span class="slider-bar"></span>'+
