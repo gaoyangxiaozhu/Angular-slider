@@ -69,7 +69,7 @@ slider{
   border-radius: 12px;
   top: -4px;
 }
-slider.active .slider-hander{
+.slider.active .slider-hander{
   border: 1px solid #4aa4ce;
 }
 .slider .min-num,
@@ -95,6 +95,7 @@ slider.active .slider-hander{
   height: 28px;
   border-radius: 28px;
   background-color: #ccc;
+  outline: none;
   /*防止鼠标拖动时　文字被选中*/
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -112,6 +113,7 @@ slider.active .slider-hander{
 .slider .min-num,
 .slider .max-num{
   color: white;
+  font-size:
 }
 
 .slider .sign-num{
