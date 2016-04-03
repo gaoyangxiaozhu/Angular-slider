@@ -1,5 +1,5 @@
 {
-  "name": "angular-range-slider",
+  "name": "gyy-angular-range-slider",
   "version": "1.0.0",
   "description": "range slider for angular page app",
   "main": "dist/slider.js",
