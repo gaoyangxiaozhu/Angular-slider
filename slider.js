@@ -28,7 +28,8 @@
              max: '@',
              from: '=',
              to: '=',
-             single: '=',
+             single: '@',
+             hideText: '@'
          },
 
          // Assign the angular directive template HTML
@@ -38,13 +39,17 @@
                 '<span class="slider-line"></span>'+
                 '<span class="slider-line-after"></span>'+
                 '<span class="slider-bar"></span>'+
-                '<span class="sign-num left">'+
-                  '<span class="text">{{ currentFrom }}</span>'+
+                '<span class="left-container">'+
+                  '<span class="sign-num left">'+
+                    '<span class="text">{{ from }}</span>'+
+                  '</span>'+
+                  '<span class="slider-bar-from slider-hander"></span>'+
                 '</span>'+
-                '<span class="slider-bar-from slider-hander"></span>'+
-                '<span class="slider-bar-to slider-hander"></span>'+
-                '<span class="sign-num right">'+
-                  '<span class="text">{{ currentTo }} 3</span>'+
+                '<span class="right-container">'+
+                  '<span class="slider-bar-to slider-hander"></span>'+
+                  '<span class="sign-num right">'+
+                    '<span class="text">{{ to }}</span>'+
+                  '</span>'+
                 '</span>'+
              '</span>'
      };
@@ -71,13 +76,21 @@
       */
      function build(scope, el, attrs) {
 
+         var sliderBody = el.find('.slider-body');
+         var leftContainer = el.find('.left-container');
+         var rightContainer = el.find('.right-container');
+         var hander = el.find('.slider-hander');
          var leftBtn = el.find('.slider-bar-from.slider-hander');
          var rightBtn = el.find('.slider-bar-to.slider-hander');
          var sliderBar = el.find('.slider-bar');
          var slideLine = el.find('.slider-line');
+         var leftSign = el.find('.sign-num.left');
+         var rightSign = el.find('.sign-num.right');
+
 
          rightBtn.data('type', 'right');
          leftBtn.data('type', 'left');
+
 
          var line ={
              x: slideLine.offset().left,
@@ -86,6 +99,7 @@
              bar: sliderBar
          }
 
+
          // avoid  negative number or none
          if (!scope.min || scope.min <= 0) {
              scope.min = 0;
@@ -93,39 +107,72 @@
          if(!scope.max || scope.max <= 0){
              scope.max = 100;
          }
-         if(!scope.from || scope.from <=0){
-             scope.from = scope.min;
-         }
+
          if(!scope.to || scope.to <=0){
              scope.to= scope.max;
          }
          if(scope.to > scope.max){
             scope.to = scope.max;
          }
-         if(scope.from > scope.max){
-           scope.from = scope.max;
+         if(!scope.single){
+           if(!scope.from || scope.from <=0){
+               scope.from = scope.min;
+           }
+           if(scope.from > scope.max){
+             scope.from = scope.max;
+           }
          }
+         if(scope.single){
+           scope.from = 0;
+         }
+
 
          var option={
              min: scope.min,
              max: scope.max,
-             from: 20,
-             to: 60,
+             from: scope.from,
+             to: scope.to,
              sums: scope.max - scope.min,
-             single: scope.single? scope.single: false
+             single: scope.single== "false " ? true : false,
+             hideText: scope.hideText == 'true' ? true : false
          }
-
 
          var init={};//用于每次mousedown事件中hander的位置的初始化
          var target=null;
+         var currentType= null; //用于每次mousemove事件时　判断移动哪一个container(left-container or right-container)
 
-        function startMove(e){
+         //如果single为true 移除left-container
+         removeLeftBtn(option.single);
+
+         //如果hideText为true, 移除text
+         removeText(option.hideText);
+
+         //初始化按钮容器位置
+         initPosition();
+
+         sliderBody.focus(function(e){
+            var that = angular.element(this);
+            that.addClass('active');
+         })
+         sliderBody.blur(function(e){
+           var that = angular.element(this);
+           that.removeClass('active');
+         })
+
+         sliderBody.on('mousedown', change);
+
+         angular.element(document).on('mousemove.slider', function(e){
+           var type= currentType;
+           var newPoint = e.clientX;
+           startMove(e, type, newPoint);
+         });
+         angular.element(document).on('mouseup.slider', stopMove);
+
+
+        function startMove(e, type, newPoint){
 
             e = e || window.event;
             if(!init.drag) return;
-
-            var newPoint = e.clientX;
-            var type= target.data('type');
 
             switch(type){
                 case 'left':
@@ -135,8 +182,8 @@
                      moveRightBar();
                      break;
              }
-            function updateTargetLeft(){
-                var len = Math.abs(newPoint-init.oX); //移动的距离
+            function updateCPosition(target, oldPoint){
+                var len = Math.abs(newPoint - oldPoint); //移动的距离
                 var percentLeft = (newPoint-line.x)/line.w
                 percentLeft*=100;
 
@@ -146,9 +193,9 @@
                 target.css(css);
               }
             function moveLeftBar(){
-              newPoint = newPoint >= init.rX ? init.rX : newPoint
+              newPoint = newPoint >= init.rX ? init.rX-1 : newPoint
               newPoint = newPoint <= line.x ? line.x : newPoint
-              updateTargetLeft();
+              updateCPosition(leftContainer, init.lX);
 
               var percentWidth = (init.rX - newPoint) / line.w;
               percentWidth*=100;
@@ -166,9 +213,9 @@
 
             }
           function moveRightBar(){
-              newPoint = newPoint <= init.lX ? init.lX : newPoint
+              newPoint = newPoint <= init.lX ? init.lX+1 : newPoint
               newPoint = newPoint >= line.y ? line.y : newPoint
-              updateTargetLeft();
+              updateCPosition(rightContainer, init.rX);
               var percentWidth=((newPoint-init.lX)/line.w);
               percentWidth*=100;
 
@@ -200,44 +247,59 @@
             var that = angular.element(this);
             target = that;
             init={
-               oX: e.clientX, //当前bar的初始位置 距离窗口左侧的距离
                lX: option.single? line.x: leftBtn.offset().left,
                rX: rightBtn.offset().left,
                drag: true
             }
+            var newPoint = e.clientX;
+
+            function moveWhichContainer(hide){
+              if(hide || newPoint > init.rX){
+                return currentType = 'right';
+              }
+              if(newPoint < init.lX){
+                return currentType = 'left';
+              }
+              if(newPoint > init.lX && newPoint < init.rX){
+
+                var mid = (init.lX + init.rX) / 2;
+                if (newPoint > mid ){
+                  return currentType = 'right';
+                }else{
+                  return  currentType = 'left';
+                }
+              }
+            }
+            var type= moveWhichContainer(option.single);
+            startMove(e, type, newPoint);
 
           }
+
         function removeLeftBtn(hide){
           if(hide){
-              el.find('.slider-bar-from').remove();
-              el.find('.slider-line-before').remove();
+              el.find('.left-container').remove();
           }
         }
 
-        function initPositionForBtn(){
+        function removeText(hide){
+          if(hide){
+            el.find('.sign-num').remove();
+          }
+        }
+
+        function initPosition(){
 
             var initLeftPositionPer = (option.from / option.sums * 100 ) + '%';
             var initRightPositinPer = (option.to / option.sums * 100 ) + '%';
 
-            leftBtn.css({"left":  initLeftPositionPer});
-            rightBtn.css({"left": initRightPositinPer});
+            leftContainer.css({"left":  initLeftPositionPer});
+            rightContainer.css({"left":  initRightPositinPer});
 
             sliderBar.css({
               'left': initLeftPositionPer,
               'width': (option.to - option.from) / option.sums * 100 + '%',
             });
         }
-
-        removeLeftBtn(option.single);
-        //初始化按钮位置
-        initPositionForBtn();
-
-        if(!option.single){
-            leftBtn.on('mousedown', change);
-        }
-        rightBtn.on('mousedown', change);
-        angular.element(document).on('mousemove.slider', startMove);
-        angular.element(document).on('mouseup.slider', stopMove);
 
      }
 
