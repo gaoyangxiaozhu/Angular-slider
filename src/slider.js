@@ -94,6 +94,7 @@
          var slideLine = el.find('.slider-line');
          var leftSign = el.find('.sign-num.left');
          var rightSign = el.find('.sign-num.right');
+         var minMaxNumSpan = el.find('.min-num, .max-num');
 
 
          leftContainer.data('type', 'left');
@@ -141,7 +142,7 @@
              from: scope.from,
              to: scope.to,
              sums: scope.max - scope.min,
-             single: scope.single== "false " ? true : false,
+             single: scope.single== "true" ? true : false,
              hideText: scope.hideText == 'true' ? true : false,
              hideMinMax: scope.hideMinMax == 'true' ? true : false,
              hideFromTo: scope.hideFromTo == 'true' ? true : false,
@@ -181,6 +182,10 @@
            that.removeClass('active');
          })
 
+         //点击最小最大span不移动slider-bar
+         minMaxNumSpan.on('mousedown', function(e){
+           e.stopPropagation();
+         });
          sliderBody.on('mousedown', change);
 
 
